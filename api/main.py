@@ -18,10 +18,12 @@ CORS(app)  # 跨域
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['UPLOAD_FOLDER'] = os.path.join(basedir, 'temp')
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER']) 
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 # 文件类型过滤
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'JPG', 'PNG'])
+
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
@@ -33,7 +35,7 @@ def hello_world():
 
 @app.route('/api/getmark')
 def getmark():
-    fontname =  request.args.get('fontname', 'Microsoft YaHei')
+    fontname = request.args.get('fontname', 'Microsoft YaHei')
     fontsize = int(request.args.get('fontsize', 15))
     text = request.args.get('text', 'Nothing')
     size = int(request.args.get('size', 100))
@@ -75,7 +77,7 @@ def embed():
     fontsize = request.form.get('fontsize')
     size = request.form.get('size')
     text = request.form.get('text')
-    save_name = str(uuid.uuid4())+'.png'
+    save_name = str(uuid.uuid4()) + '.png'
     if not all([image, algorithm, fontname, fontsize, size, text]):
         return {'status': 'error', 'msg': '参数不能为空'}
     fontsize = int(fontsize)
@@ -87,11 +89,11 @@ def embed():
         return {'status': 'error', 'msg': '嵌入失败，水印太大'}
     # 生成水印
     mark = text2img(text, size, fontname=fontname, fontsize=fontsize)
-    mark.save(os.path.join(app.config['UPLOAD_FOLDER'], 'mark-'+save_name))
+    mark.save(os.path.join(app.config['UPLOAD_FOLDER'], 'mark-' + save_name))
     # 嵌入水印
     marked_pic = do_embed(algorithm, pic, mark)
-    marked_pic.save(os.path.join(app.config['UPLOAD_FOLDER'], 'marked-pic-'+save_name))
-    return {'status': 'ok', 'mark': 'mark-'+save_name, 'marked_pic': 'marked-pic-'+save_name}
+    marked_pic.save(os.path.join(app.config['UPLOAD_FOLDER'], 'marked-pic-' + save_name))
+    return {'status': 'ok', 'mark': 'mark-' + save_name, 'marked_pic': 'marked-pic-' + save_name}
 
 
 @app.route('/api/extract', methods=["POST"])
@@ -121,3 +123,7 @@ def get_img(filename):
         response = make_response(image_data)
         response.headers['Content-Type'] = 'image/png'
         return response
+
+
+if __name__ == "__main__":
+    app.run(port=2020, host="127.0.0.1", debug=True)

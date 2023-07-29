@@ -31,10 +31,17 @@ def extract_LSB(pic, confuse=False):
 
 
 if __name__=='__main__':
-    mark = text2img(u'测试水印', 300, mode='1', fontsize=50)
+    # 开启置乱算法？
+    confuse = True
+
+    mark = text2img(u'huocms.com', 512, mode='1', fontsize=150, size_height=512)
+    mark.save('temp/before1.png')
+
     pic = Image.open('temp/lena.png')
-    confuse = False
+
     pic_marked = embed_LSB(pic, mark, confuse=confuse)
     pic_marked.save('temp/lsb_pic_marked.png')
-    ext_mark = extract_LSB(pic_marked, confuse=confuse)
+
+    pic = Image.open('temp/lsb_pic_marked.png')
+    ext_mark = extract_LSB(pic, confuse=confuse)
     ext_mark.save('temp/lsb_ext_mark.png')
